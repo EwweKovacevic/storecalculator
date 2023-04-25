@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Session Sum Calculator</title>
+</head>
+<body>
+	<h1>Session Sum Calculator</h1>
+
+	<button id="start" onclick="startSession()">Start Session</button>
+
+	<div id="session" style="display: none;">
+		<p>Session started!</p>
+		<p>Elapsed time: <span id="timer">0:00</span></p>
+		<p>Enter a number:</p>
+		<input type="number" id="number">
+		<button onclick="addNumber()">Add Number</button>
+	</div>
+
+	<div id="result" style="display: none;">
+		<p>Session ended!</p>
+		<p>Sum of all numbers added: <span id="sum"></span>kr</p>
+		<p>Each: <span id="splitSum"></span>kr</p>
+		<p id="totalTimeLabel">Total time elapsed: <span id="totalTime"></span></p>
+	</div>
+
+	<script>
+		let numbers = [];
+		let startButton = document.getElementById("start");
+		let endButton = document.createElement("button");
+		endButton.innerText = "End Session";
+		endButton.style.display = "none";
+		endButton.onclick = endSession;
+		document.body.appendChild(endButton);
+		let session = document.getElementById("session");
+		let result = document.getElementById("result");
+		let timer = document.getElementById("timer");
+		let sum = document.getElementById("sum");
+		let splitSum = document.getElementById("splitSum");
+		let totalTimeEl = document.getElementById("totalTime");
+		let totalTimeLabel = document.getElementById("totalTimeLabel");
+		let startTime;
+
+		function startSession() {
+			startTime = Date.now();
+			startButton.style.display = "none";
+			endButton.style.display = "block";
+			session.style.display = "block";
+			updateTimer();
+		}
+
+		function addNumber() {
+			let number = Number(document.getElementById("number").value);
+			if (!isNaN(number)) {
+				numbers.push(number);
+			}
+			document.getElementById("number").value = "";
+		}
+
+		function endSession() {
+			let total = numbers.reduce((a, b) => a + b, 0);
+			let elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+			let minutes = Math.floor(elapsedTime / 60);
+			let seconds = elapsedTime % 60;
+			if (seconds < 10) {
+				seconds = "0" + seconds;
+			}
+			let totalTime = minutes + ":" + seconds;
+			sum.innerText = total;
+			splitSum.innerText = (total / 2).toFixed(2);
+			totalTimeEl.innerText = totalTime;
+			session.style.display = "none";
+			result.style.display = "block";
+			endButton.style.display = "none";
+			startButton.style.display = "block";
+			numbers = [];
+			totalTimeLabel.style.display = "block";
+		}
+
+		function updateTimer() {
+			let elapsed = Math.floor((Date.now() - startTime) / 1000);
+			let minutes = Math.floor(elapsed / 60);
+			let seconds = elapsed % 60;
+			if (seconds < 10) {
+				seconds = "0" + seconds;
+			}
+			timer.innerText = minutes + ":" + seconds;
+			if (session.style.display != "none") {
+				setTimeout(updateTimer, 1000);
+			}
+		}
+	</script>
+
+</body>
+</html>
